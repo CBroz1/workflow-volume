@@ -1,4 +1,5 @@
-from typing import List, Union
+from collections import Sequence
+from typing import List
 
 import datajoint as dj
 
@@ -28,10 +29,13 @@ def get_session_directory(session_key: dict) -> str:
         return None
 
 
-def get_vol_root_data_dir() -> Union[str, List[str]]:
+def get_vol_root_data_dir() -> List[str]:
     """Return root directory for ephys from 'vol_root_data_dir' in dj.config
 
     Returns:
         path (any): List of path(s) if available or None
     """
-    return dj.config.get("custom", {}).get("vol_root_data_dir", None)
+    roots = dj.config.get("custom", {}).get("vol_root_data_dir", None)
+    if not isinstance(roots, Sequence):
+        roots = [roots]
+    return roots

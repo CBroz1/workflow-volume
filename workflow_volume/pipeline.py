@@ -1,36 +1,40 @@
-import datajoint as dj
-from element_animal import subject
-from element_animal.subject import Subject
+from element_animal import subject, surgery
+from element_animal.subject import Subject  # Dependency for session
+from element_animal.surgery import BrainRegion  # Dependency for imaging
+from element_calcium_imaging import imaging, scan
 from element_lab import lab
-from element_lab.lab import Lab, Project, Protocol, Source, User
-from element_session import session
-from element_session.session_with_datetime import Session, SessionDirectory
+from element_lab.lab import Lab, Project, Protocol, Source, User  # Deps for Subject
+from element_session import session_with_id as session
+from element_session.session_with_id import Session, SessionDirectory
 from element_volume import bossdb, volume
 from element_volume.bossdb import BossDBURLs
 from element_volume.readers.bossdb import BossDBInterface
 
+from . import db_prefix
 from .paths import get_session_directory, get_vol_root_data_dir
-
-if "custom" not in dj.config:
-    dj.config["custom"] = {}
-
-db_prefix = dj.config["custom"].get("database.prefix", "")
+from .reference import Device
 
 __all__ = [
+    "db_prefix",
     "lab",
-    "subject",
+    "scan",
+    "imaging",
     "session",
+    "subject",
+    "surgery",
     "bossdb",
     "volume",
-    "BossDBURLs",
+    "Device",
     "Lab",
-    "Source",
-    "Subject",
     "Project",
     "Protocol",
     "User",
+    "Source",
     "Session",
     "SessionDirectory",
+    "Subject",
+    "BrainRegion",
+    "BossDBURLs",
     "BossDBInterface",
     "get_session_directory",
     "get_vol_root_data_dir",
@@ -40,12 +44,18 @@ __all__ = [
 
 lab.activate(db_prefix + "lab")
 
-subject.activate(db_prefix + "subject", linking_module=__name__)
+# subject.activate(db_prefix + "subject", linking_module=__name__)
+surgery.activate(db_prefix + "subject", db_prefix + "surgery", linking_module=__name__)
 
 Experimenter = lab.User
 session.activate(db_prefix + "session", linking_module=__name__)
 
+Equipment = Device
+Location = BrainRegion
+imaging.activate(db_prefix + "imaging", db_prefix + "scan", linking_module=__name__)
+
 bossdb.activate(db_prefix + "bossdb")
 
 URLs = bossdb.BossDBURLs
+Mask = imaging.Segmentation.Mask
 volume.activate(db_prefix + "volume", linking_module=__name__)
