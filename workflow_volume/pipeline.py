@@ -1,7 +1,7 @@
 from element_animal import subject, surgery
 from element_animal.subject import Subject  # Dependency for session
 from element_animal.surgery import BrainRegion  # Dependency for imaging
-from element_calcium_imaging import imaging, scan
+from element_calcium_imaging import imaging, imaging_report, scan
 from element_lab import lab
 from element_lab.lab import Lab, Project, Protocol, Source, User  # Deps for Subject
 from element_session import session_with_id as session
@@ -19,6 +19,7 @@ __all__ = [
     "lab",
     "scan",
     "imaging",
+    "imaging_report",
     "session",
     "subject",
     "surgery",
